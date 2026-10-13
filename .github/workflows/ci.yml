@@ -1,0 +1,47 @@
+# CI: тесты и проверка, что пакет research/ и скрипты хотя бы компилируются.
+# Деплоя нет: репозиторий исследовательский.
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - develop
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Compile
+        run: python -m compileall -q research apps scripts bootstrap.py
+
+      - name: Pytest
+        run: python -m pytest tests/ -q
+
+      # Пока код не вычищен под ruff, ошибки не блокируют merge.
+      - name: Ruff
+        continue-on-error: true
+        run: python -m ruff check research apps scripts tests
