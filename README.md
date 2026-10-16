@@ -178,5 +178,5 @@ streamlit run apps/streamlit/Home.py --server.port 8501
 - [ ] Расширение каталога визуализаций.
 - [ ] Бэктест-фреймворк для сигналов.
 - [ ] Пайплайн: feature build → signal eval → report.
-- [ ] CI (lint, test, typecheck).
+- [x] CI (GitHub Actions: pytest, compileall, ruff не блокирует).
 - [ ] Dashboard для мониторинга качества фичей.
